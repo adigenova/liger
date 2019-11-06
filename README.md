@@ -3,12 +3,16 @@ Synthetic Scaffolding Graph construction, Overlaps, Scaffolding, Validation, Gap
 Liger is a [Wengan](https://github.com/adigenova/wengan) component.
 
 ## Installation
-To install liger run the folliwing commands:
+To install liger run the following commands:
 ```bash
 git clone --recursive https://github.com/adigenova/liger.git liger
 cd liger
 sh install.sh
 ```
+
+c++ compiler; compilation was tested with gcc version GCC/7.3.0-2.30 (Linux) and clang-1000.11.45.5 (Mac OSX).
+cmake 3.2+.
+
 
 ## External libraries
 
