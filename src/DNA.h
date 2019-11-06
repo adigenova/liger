@@ -1,0 +1,168 @@
+//
+// Created by Alex Digenova on 5/24/18.
+//
+
+#ifndef LIGER_DNA_H
+#define LIGER_DNA_H
+
+#include <cstring>   /* std::memset */
+#include <stdexcept> /* std::invalid_argument */
+
+#define BASE_MASK 0x3 /* binary: 11 */
+
+using namespace std;
+/* useful constants */
+enum
+{
+    BASE_A = 0x0, /* binary: 00 */
+    BASE_C = 0x1, /* binary: 01 */
+    BASE_G = 0x2, /* binary: 10 */
+    BASE_T = 0x3, /* binary: 11 */
+};
+//to save some bits in memory for sequences that don't have 'N' in case of having are removed
+//todo: ignore N in the code
+class DnaBitset
+{
+private:
+    char    *m_data;
+    size_t m_len;
+
+public:
+    /**
+     * @brief Constructs a compressed representation of a DNA sequence.
+     * @param dna_str A string holding a DNA sequence (e.g. "ATGCACG").
+     * @param dna_len The length of the DNA sequence.
+     */
+    DnaBitset(const char* dna_str, const size_t dna_len)
+    {
+        m_len = dna_len;
+
+        /* number of bytes necessary to store dna_str as a bitset */
+        size_t dna_bytes = (dna_len / 4) + (dna_len % 4 != 0);
+
+        m_data = new char[dna_bytes];
+        //we set the char to caracters
+        std::memset(m_data, 0, dna_bytes);
+
+        /* for each base of the DNA sequence */
+        for (size_t i = 0; i < dna_len; ++i)
+        {
+            uint8_t shift = 6 - 2 * (i % 4);
+
+            switch (dna_str[i])
+            {
+                case 'A':
+                    m_data[i / 4] |= BASE_A << shift;
+                    break;
+                case 'C':
+                    m_data[i / 4] |= BASE_C << shift;
+                    break;
+                case 'G':
+                    m_data[i / 4] |= BASE_G << shift;
+                    break;
+                case 'T':
+                    m_data[i / 4] |= BASE_T << shift;
+                    break;
+                    //lower case letters
+                case 'a':
+                    m_data[i / 4] |= BASE_A << shift;
+                    break;
+                case 'c':
+                    m_data[i / 4] |= BASE_C << shift;
+                    break;
+                case 'g':
+                    m_data[i / 4] |= BASE_G << shift;
+                    break;
+                case 't':
+                    m_data[i / 4] |= BASE_T << shift;
+                    break;
+                 //IUPAC-IUB/GCG Codes from Abyss assembler
+                case 'M':  m_data[i / 4] |= BASE_A << shift;
+                    break; // A or C
+                case 'R':  m_data[i / 4] |= BASE_A << shift;
+                    break; // A or G
+                case 'W':  m_data[i / 4] |= BASE_A << shift;
+                    break; // A or T
+                case 'S': m_data[i / 4] |= BASE_C << shift;
+                    break; // C or G
+                case 'Y': m_data[i / 4] |= BASE_C << shift;
+                    break; // C or T
+                case 'K': m_data[i / 4] |= BASE_G << shift;
+                    break; // G or T
+                case 'V': m_data[i / 4] |= BASE_A << shift;
+                    break; // A or C or G
+                case 'H': m_data[i / 4] |= BASE_A << shift;
+                    break; // A or C or T
+                case 'D': m_data[i / 4] |= BASE_A << shift;
+                    break; // A or G or T
+                case 'B':  m_data[i / 4] |= BASE_C << shift;
+                    break; // C or G or T
+                default:
+                    cout << "Warning:Invalid DNA base found :"<<dna_str[i]<<endl;
+                    cout << "Warning: Changing base to A"<<endl;
+                    m_data[i / 4] |= BASE_A << shift;
+                    //throw std::invalid_argument("invalid DNA base found in DnaBitset class");
+            }
+
+            shift = (shift == 0) ? 6 : shift - 2;
+        }
+    }
+
+    /**
+     * @brief Destructor.
+     */
+    ~DnaBitset()
+    {
+        delete[] m_data;
+    }
+
+    /**
+     * @brief Returns the stored DNA sequence as an ASCII string.
+     */
+    string to_string() const
+    {
+        char* dna_str = new char[m_len + 1];
+
+        /* for each base of the DNA sequence */
+        for (size_t i = 0; i < m_len; ++i)
+        {
+            uint8_t shift = 6 - 2 * (i % 4);
+            uint8_t mask = BASE_MASK << shift;
+
+            /* get the i-th DNA base */
+            uint8_t base = (m_data[i / 4] & mask) >> shift;
+
+            switch (base)
+            {
+                case BASE_A:
+                    dna_str[i] = 'A';
+                    break;
+                case BASE_C:
+                    dna_str[i] = 'C';
+                    break;
+                case BASE_G:
+                    dna_str[i] = 'G';
+                    break;
+                case BASE_T:
+                    dna_str[i] = 'T';
+                    break;
+                default:
+                    throw std::runtime_error("invalid DNA base");
+            }
+        }
+
+        dna_str[m_len] = '\0';
+
+        string tmp(dna_str);
+        delete[] dna_str;
+        //return dna_str;
+        return tmp;
+    }
+
+
+};
+
+
+
+
+#endif //LIGER_DNA_H
