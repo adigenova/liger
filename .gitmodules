@@ -1,0 +1,6 @@
+[submodule "libs/edlib"]
+	path = libs/edlib
+	url = https://github.com/Martinsos/edlib.git
+[submodule "libs/spoa"]
+	path = libs/spoa
+	url = https://github.com/rvaser/spoa.git
