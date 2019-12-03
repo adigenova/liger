@@ -217,15 +217,8 @@ void MPLibrary::load_library(Contig *a) {
 void MPLibrary::print_links(){
 
     for(auto l:this->links){
-        /*if(l.has_seq()){
-            *//*cout <<"OK "<<this->getRank()<<" "<<l.lid<<" "<<l.edge << " " << l.longread << " " << l.ctg1 << " " << l.ctg2 << " " << l.dist << " "
-                 << l.getgapseq() << endl;*//*
-            cout <<"OK "<<this->getRank()<<" "<<l.lid << " " << l.longread << " " << l.dist << " "
-                 << l.getgapseq() << endl;
-        }else{*/
             //cout <<"OK "<<this->getRank()<<" "<<l.lid<<" "<<l.edge << " " << l.longread << " " << l.ctg1 << " " << l.ctg2 << " " << l.dist <<" "<<  endl;
             cout <<"OK "<<this->getRank()<<" "<<l.lid << " " << l.lonread_id << " " << l.dist <<" "<<  endl;
-        //}
     }
 
 }

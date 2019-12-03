@@ -155,7 +155,6 @@ void Contig::mark_repeats() {
     int repeats=0;
     cout << "Max allowed coverage "<<max<<endl;
     for (auto con:this->contigs) {
-        //cout << "NOREPEAT CTG:"<<con.ctgid<<" "<<con.length<<" "<<con.repeat<<" "<<con.coverage<<endl;
         if(con.coverage > max){
             this->set_repeat(con.ctgid);
             //cout << "REPEAT CTG:"<<con.ctgid<<" "<<con.length<<" "<<con.repeat<<" "<<con.coverage<<endl;
@@ -194,9 +193,7 @@ void Contig::mark_repeats(string filename) {
     this->avg_ctg_cov=compute_average(ocov);
     this->std_ctg_cov=compute_std(ocov,this->avg_ctg_cov);
 
-    /*if(this->std_ctg_cov == 1){
-        this->std_ctg_cov++;//we use and std min of 2
-    }*/
+  
     //I want the upper coverage
     float max = float(avg_ctg_cov+2.5*std_ctg_cov+0.5);
     int repeats=0;
@@ -284,4 +281,3 @@ int Contig::check_long_read(int id, const int lr) {
         return 0;
     }
 }
-

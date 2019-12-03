@@ -167,16 +167,7 @@ cehits CJoiner::compute_optimal_aligment_trim(string &q, string &t, bool log, in
         rtrim=this->TrimALN(result,t.length(),q.length(),30,min_iden);
         printf("qs=%d qe=%d qc=%d ts=%d te=%d iden=%f\n",rtrim.qstart,rtrim.qstop,rtrim.qcov,rtrim.tstart,rtrim.tstop,rtrim.iden);
 
-        /*hit.tstart=result.startLocations[0];
-        hit.tstop=result.endLocations[0];
-        //identity
-        hit.identity=100-(100*result.editDistance/result.alignmentLength);
-        hit.qcov=(100 * abs(hit.tstart-hit.tstop)/q.length());
-        hit.edit_distance=result.editDistance;
-        //due to gaps the lenght of the alignment could be 100
-        if(hit.qcov>100){
-            hit.qcov=100;
-        }*/
+
 
     } else {
         printf("Error computing edit distance on CJoiner class\n");
@@ -263,21 +254,10 @@ void CJoiner::contigs_best_fit(string &source_end, string &target_end, string &c
 
     auto s2c = this->compute_optimal_aligment(source_end, consensus, false);
     auto t2c = this->compute_optimal_aligment(target_end, consensus, false);
-    ////cehits s2c,t2c;
-    /* if(e->getBd() <= 0) {
-         s2c = this->compute_optimal_aligment(source_end, consensus, false);
-         t2c = this->compute_optimal_aligment(target_end, consensus, false);
-     }else{
-         s2c = this->compute_optimal_aligment(source_end, consensus, false);
-         t2c = this->compute_optimal_aligment(target_end, consensus, false);
-     }
- */
+
     //we compute the onserved distance
     int d_obs=this->get_obs_distance_hits(&s2c,&t2c);
-   /* if(e->getBd() < 0){
-        printf("Edge Overlap: EO=%d OO=%d s.b=%d s.e=%d t.b=%d t.e=%d\n",e->getBd(),d_obs,s2c.tstart,s2c.tstop,t2c.tstart,t2c.tstop);
-        printf("Edge Overlap: >S\n%s\n >t\n%s\n",source_end.c_str(),target_end.c_str());
-    }*/
+
     //we compare the d_obs to the expected one considering the std or a maximum desviation of 10%
     // u+- 3*std= 99.7% of cases
     if(abs(d_obs-e->getBd()) < 4 * max(e->getBd_std(),(int)(e->getBd()*0.1+0.5))){
@@ -343,13 +323,7 @@ void CJoiner::contigs_best_fit(string &source_end, string &target_end, string &c
             //we check if we found a good result
              if((selected_al>=0 and selected_bl >=0) and (abs(best_distl-e->getBd()) < 4 * max(e->getBd_std(),(int)(e->getBd()*0.1+0.5)))){
 
-                 /*cout << "FROM LEAD READ= S A=" << selected_al << " S B=" << selected_bl << " Exact Distance=" << best_distl <<" Expected="<<e->getBd()
-                      <<" sd_expected="<<e->getBd_std()<<" LRL="<<local_lonread.length()<<" "<< endl;
-                 for(auto h:hsourcel)
-                     cout << "SOURCE locs:"<<h.tstart<<" "<<h.tstop<<" "<<h.identity<<" "<<h.qcov<<" "<<h.edit_distance<<endl;
-                 for(auto h:htargetl)
-                     cout << "TARGET locs:"<<h.tstart<<" "<<h.tstop<<" "<<h.identity<<" "<<h.qcov<<" "<<h.edit_distance<<endl;
-                */
+
                  char c=(char)1;//there is only one long read
                  string long_reads_coverage_s (local_lonread.length(), c);
                  this->fill_edge_variables(best_distl,revcns,e,local_lonread,long_reads_coverage_s,hsourcel[selected_al],htargetl[selected_bl]);
@@ -389,31 +363,6 @@ int CJoiner::get_obs_distance_hits(cehits *s2c, cehits *t2c){
     return d_obs;
 }
 
-/*
-Warning case not take into account s.b=105 s.e=604 t.b=111 t.e=599
-Warning case not take into account s.b=1322 s.e=1821 t.b=1323 t.e=1745
-Warning case not take into account s.b=1322 s.e=1821 t.b=1323 t.e=1745
-Warning case not take into account s.b=498 s.e=997 t.b=543 t.e=992
-Warning case not take into account s.b=498 s.e=997 t.b=543 t.e=992
-Warning case not take into account s.b=9 s.e=493 t.b=14 t.e=483
-Warning case not take into account s.b=490 s.e=989 t.b=533 t.e=907
-Warning case not take into account s.b=661 s.e=1160 t.b=701 t.e=1129
-Warning case not take into account s.b=508 s.e=1007 t.b=575 t.e=979
-Warning case not take into account s.b=503 s.e=1002 t.b=554 t.e=990
-Warning case not take into account s.b=503 s.e=1002 t.b=554 t.e=990
-Warning case not take into account s.b=6110 s.e=6615 t.b=6166 t.e=6601
-Warning case not take into account s.b=517 s.e=1014 t.b=548 t.e=951
-Warning case not take into account s.b=547 s.e=1046 t.b=579 t.e=1009
-Warning case not take into account s.b=948 s.e=1447 t.b=954 t.e=1446
-Warning case not take into account s.b=647 s.e=1146 t.b=689 t.e=1139
-Warning case not take into account s.b=23 s.e=507 t.b=35 t.e=502
-Warning case not take into account s.b=1015 s.e=1514 t.b=1104 t.e=1494
-Warning case not take into account s.b=1015 s.e=1514 t.b=1104 t.e=1494
-Warning case not take into account s.b=5507 s.e=6009 t.b=5511 t.e=5964
-Warning case not take into account s.b=559 s.e=1057 t.b=625 t.e=999
-Warning case not take into account s.b=497 s.e=996 t.b=515 t.e=951
-Warning case not take into account s.b=497 s.e=996 t.b=515 t.e=951
-*/
 
 void CJoiner::fill_edge_variables(int distance_obs,bool revcns, EdgeS* e , string &consensus, string &coverage_s,cehits sh, cehits th){
 
@@ -433,10 +382,7 @@ void CJoiner::fill_edge_variables(int distance_obs,bool revcns, EdgeS* e , strin
         e->setEdge_overlap(distance_obs);
     }else{
         //we have to assert that the source is previous to the target
-        /*if(s2ce.start > t2ce.stop ){
-            //we mark the edge has bad
-            e->setEdge_proper_gap(false);
-        }*/
+      
 
         auto cstart=sh.tstop+1;
         auto cstop=th.tstart-1;
@@ -521,5 +467,3 @@ void CJoiner::printAlignment(const char* query, const char* target, const unsign
     }
     printf("\n");
 }
-
-

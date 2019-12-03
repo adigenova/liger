@@ -70,9 +70,6 @@ BFilling::BFilling(GraphS *lines, string fastalongreads, string prefix) {
     //we print some information like the reads that should be cached in order to avoid random access to the disk
     cout <<"Total number of long reads to store "<<lorder.size()<<endl;
     cout << "Total number of long reads that should be cached "<< lcache.size()<<" frac: "<< (float)lcache.size()/(float)lorder.size()<<endl;
-    /*for(auto l:lcache){
-        cout <<"READ should be cached : "<<l.first <<", max distance in longreads: "<<l.second<<"  and participate in "<<  countle[l.first] <<" edges"<<endl;
-    }*/
 
     //STEP 4: We create the bank object using the order of the long reads and we cache some long reads in memory to avoid slow disk usage
     clock_t begin = clock();
@@ -96,10 +93,6 @@ BFilling::BFilling(GraphS *lines, string fastalongreads, string prefix) {
     //todo: change the contig name file
     bflog.open(this->prefix+".BFilling.log");
     bflog << "EID Proper_Gap Low_Iden Exact_Overlap Estimated_distance Estimated_distance_std Gap_Consensus_Coverage Coverage_source_end Identity_source_end Coverage_target_end Identity_target_end"<<endl;
-   /* cout <<"CNS Info eid:"<<eid<<" Proper_Gap="<<e->isEdge_proper_gap()<<" Low_Iden="<<e->isEdge_low_identity()<<" Exact_Overlap="<<e->getEdge_overlap()
-         <<" Gap_Consensus_Coverage="<<e->getEdge_avg_cns()<<" Coverage_source_end="<<e->getCovs()<<" Identity_source_end="<<e->getIdens()
-         <<" Coverage_target_end="<<e->getCovt()<<" Identity_target_end="<<e->getIdent()<<" Estimated_distance="<<e->getBd()<<endl;
-*/
 
 }
 
@@ -171,10 +164,6 @@ void * threaded_edges(void* args) {
 void BFilling::print_cns_info(uint64_t eid){
     auto e=linesG->get_edge(eid);
     //I have to store more information as the avg identity and coverage of the flanking nodes
-   /* cout <<"CNS Info eid:"<<eid<<" Proper_Gap="<<e->isEdge_proper_gap()<<" Low_Iden="<<e->isEdge_low_identity()<<" Exact_Overlap="<<e->getEdge_overlap()
-         <<" Gap_Consensus_Coverage="<<e->getEdge_avg_cns()<<" Coverage_source_end="<<e->getCovs()<<" Identity_source_end="<<e->getIdens()
-         <<" Coverage_target_end="<<e->getCovt()<<" Identity_target_end="<<e->getIdent()<<" Estimated_distance="<<e->getBd()<<endl;
-   */ //bflog << "EID Proper_Gap Low_Iden Exact_Overlap Estimated_distance Gap_Consensus_Coverage Coverage_source_end Identity_source_end Coverage_target_end Identity_target_end"<<endl;
     bflog <<eid<<" "<<e->isEdge_proper_gap()<<" "<<e->isEdge_low_identity()<<" "<<e->getEdge_overlap()<<" "<<e->getBd()
           <<" "<<e->getBd_std()<<" "<<e->getEdge_avg_cns()<<" "<<e->getCovs()<<" "<<e->getIdens() <<" "<<e->getCovt()<<" "<<e->getIdent()<<endl;
 
@@ -426,9 +415,6 @@ void BFilling::build_lines() {
             auto p=new SLines(lemonTog[path[0]]);
             nodes2lines[lemonTog[path[0]]]=current_path;
             //we save is the line is circular or not
-            /*if(circular_nodes.count(lemonTog[path[0]]))
-                p->set_as_circular(lemonTog[path[0]]);
-*/
             for (int i = 1; i <path.size() ; ++i) {
                 p->add_node(lemonTog[path[i]]);
                 nodes2lines[lemonTog[path[i]]]=current_path;
@@ -473,4 +459,3 @@ void BFilling::build_lines() {
     //we destroy the tmp lemon graph
     bp.clear();
 }
-

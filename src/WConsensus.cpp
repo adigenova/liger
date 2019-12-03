@@ -25,7 +25,7 @@ WConsensus::WConsensus(vector<linking> &lin, vector<string> &seqs, string &leads
             break;
         }
     }
-     	
+
     //we populate the vector with the consensus vector
     for(int i=0; i<ls.length(); i+=wsize){
         cwindow tmp;
@@ -115,12 +115,7 @@ string WConsensus::consensusfromlead(vector<linking> &lin, vector<string> &seqs,
         consensus2+=this->generate_consensus2(this->windows[i],seqs,ls);
     }
 
-    //cout << "WCONSENSUS="<<consensus2.length()<<" "<<consensus2<<endl;
-    /*cout << "WCONSENSUS="<<consensus2.length()<<endl;
-    cout << "WCOVERAGE="<<this->coverage.size()<<endl;
-    for(auto i=0; i<consensus2.length(); i++){
-        cout <<i<<" "<<consensus2[i]<<" "<<this->coverage[i]<<endl;
-    }*/
+
     //todo: we have to clean the local containers
     //windows.clear();
      return consensus2;
@@ -211,15 +206,7 @@ string WConsensus::generate_consensus2(vector<cwindow> & window, vector<string> 
 
     vector<uint32_t> coverages;
     consensus_ = graph->generate_consensus(coverages);
-    /*cout << "local= "<<local<<" global="<<global<<endl;
-    cout << " RAW Consensus  "<<consensus_.length()<<" "<<consensus_<<endl;
-    //consensus_over_w+=consensus;
-    vector<string> msa;
-    graph->generate_multiple_sequence_alignment(msa);
-    fprintf(stdout, "Multiple sequence alignment\n");
-    for (const auto &it: msa) {
-        cout << it<<endl;
-    }*/
+
 
     uint32_t average_begin = (sbegin) / 2;
 
@@ -257,85 +244,6 @@ string WConsensus::generate_consensus2(vector<cwindow> & window, vector<string> 
     alignment_global.reset();
     return consensus_;
 }
-
-//RACON code for windows
-/*bool Window::generate_consensus(std::shared_ptr<spoa::AlignmentEngine> alignment_engine) {
-
-    if (sequences_.size() < 3) {
-        consensus_ = std::string(sequences_.front().first, sequences_.front().second);
-        return false;
-    }
-
-    auto graph = spoa::createGraph();
-    graph->add_alignment(spoa::Alignment(), sequences_.front().first,
-                         sequences_.front().second, qualities_.front().first,
-                         qualities_.front().second);
-
-    std::vector<uint32_t> rank;
-    rank.reserve(sequences_.size());
-    for (uint32_t i = 0; i < sequences_.size(); ++i) {
-        rank.emplace_back(i);
-    }
-
-    std::sort(rank.begin() + 1, rank.end(), [&](uint32_t lhs, uint32_t rhs) {
-        return positions_[lhs].first < positions_[rhs].first; });
-
-    uint32_t offset = 0.01 * sequences_.front().second;
-    for (uint32_t j = 1; j < sequences_.size(); ++j) {
-        uint32_t i = rank[j];
-
-        spoa::Alignment alignment;
-        if (positions_[i].first < offset && positions_[i].second >
-                                            sequences_.front().second - offset) {
-            alignment = alignment_engine->align_sequence_with_graph(
-                    sequences_[i].first, sequences_[i].second, graph);
-        } else {
-            std::vector<int32_t> mapping;
-            auto subgraph = graph->subgraph(positions_[i].first,
-                                            positions_[i].second, mapping);
-            alignment = alignment_engine->align_sequence_with_graph(
-                    sequences_[i].first, sequences_[i].second, subgraph);
-            subgraph->update_alignment(alignment, mapping);
-        }
-
-        if (qualities_[i].first == nullptr) {
-            graph->add_alignment(alignment, sequences_[i].first,
-                                 sequences_[i].second);
-        } else {
-            graph->add_alignment(alignment, sequences_[i].first,
-                                 sequences_[i].second, qualities_[i].first,
-                                 qualities_[i].second);
-        }
-    }
-
-    std::vector<uint32_t> coverages;
-    consensus_ = graph->generate_consensus(coverages);
-
-    if (type_ == WindowType::kTGS) {
-        uint32_t average_coverage = (sequences_.size() - 1) / 2;
-
-        int32_t begin = 0, end = consensus_.size() - 1;
-        for (; begin < static_cast<int32_t>(consensus_.size()); ++begin) {
-            if (coverages[begin] >= average_coverage) {
-                break;
-            }
-        }
-        for (; end >= 0; --end) {
-            if (coverages[end] >= average_coverage) {
-                break;
-            }
-        }
-
-        if (begin >= end) {
-            fprintf(stderr, "[racon::Window::generate_consensus] warning: "
-                    "contig %lu might be chimeric in window %u!\n", id_, rank_);
-        } else {
-            consensus_ = consensus_.substr(begin, end - begin + 1);
-        }
-    }
-
-    return true;
-}*/
 
 
 int WConsensus::CheckAlignment3(EdlibAlignResult  &result, int targetL, int queryL, string  &leadseq, string &queryseq, int qindex) {
@@ -548,9 +456,3 @@ string WConsensus::get_coverage_cns_string() {
 
     return cons_d;
 }
-
-
-
-
-
-

@@ -29,16 +29,6 @@ using namespace std;
 /* useful constants */
 
 typedef unordered_map<uint32_t , uint32_t > simplehashu;//unsinged integers
-//typedef unordered_map<int , int > simplehash;
-/*#define BASE_MASK 0x3 *//* binary: 11 *//*
-
-enum
-{
-    BASE_A = 0x0, *//* binary: 00 *//*
-    BASE_C = 0x1, *//* binary: 01 *//*
-    BASE_G = 0x2, *//* binary: 10 *//*
-    BASE_T = 0x3, *//* binary: 11 *//*
-};*/
 
 
 struct bseq{

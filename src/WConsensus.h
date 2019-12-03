@@ -10,7 +10,7 @@
 #include "spoa/spoa.hpp"
 //EDlib library for aligments
 #include "edlib.h"
-#include "IntervalTree.h"
+//#include "IntervalTree.h"
 #include "MPLibrary.h"
 #include "Utils.h"
 

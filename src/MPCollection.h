@@ -25,15 +25,6 @@ private:
 
 public:
     MPCollection(string file);
-    /*void add_lib(MPLibrary* l, Contig* g);
-    void sort_libs();
-    void set_rank();
-    MPLibrary* get_lib_by_rank(int rank);
-    int size();
-    vector<MPLibrary*> get_all_libs();
-    void print_info();*/
-   // void compute_coverage();
-   // void links2file();
 
     void sort_libs();
     void read_libs(Contig *a,int ncpu);

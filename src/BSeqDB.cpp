@@ -354,20 +354,7 @@ void BSeqDB::testRead(unordered_map<uint32_t,uint32_t> & lorder) {
     //we open the index file
     index.open("index."+prefix+".sorted.bin",std::ios::in);
 
-    /*istream is(&index);
-    while(round < iter) {
-        for (size_t i = 0; i < totalseqs; i++) {
-            //auto q=distr(eng);
-            if(seq2pos.count(i)) {
-                is.seekg(seq2pos[i]);
-                auto s = ReadSeq(is, seqid);
-                q++;
-            }
-            //cout << q<<" "<<seq2file[q]<<" "<<seq2pos[q]<<s<<endl;
-        }
-        round++;
-    }
-*/
+
     while(round < iter) {
         //for (uint32_t i = 0; i < totalseqs; i++) {
         for(auto l:lorder){
@@ -384,52 +371,6 @@ void BSeqDB::testRead(unordered_map<uint32_t,uint32_t> & lorder) {
         clock_t end = clock();
    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     cout << "TotalSeqs : "<<totalseqs<<". Time spent in "<< q<<" queries  from chunk" << elapsed_secs <<endl;
-
-    /*begin = clock();
-    round=0;
-    q=0;
-    while(round < iter) {
-        for (uint32_t i = 0; i < totalseqs; i++) {
-            auto s=getSeq(i);
-            //auto s=ChunkGetSeq(i);
-            *//*if(s.seq.length() > 0)
-            cout << s.id <<" "<<s.seq<<endl;
-            *//*
-            q++;
-        }
-        round++;
-    }
-    end = clock();
-     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    cout << "TotalSeqs : "<<totalseqs<<". Time spent in "<< q<<" queries from disk " << elapsed_secs <<endl;
-*/
-
-
-
- /*   begin = clock();
-    for (size_t i = 0; i < 1000000; i++){
-
-        auto q=distr(eng);
-        istream is(&rb[seq2file[q]]);
-        is.seekg(seq2pos[q]);
-        auto s=ReadSeq(is,seqid);
-        //cout << q<<" "<<seq2file[q]<<" "<<seq2pos[q]<<" "<<s.length()<<" "<<s<<endl;
-    }
-     end = clock();
-     elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    cout << "Time spent in 1M queries " << elapsed_secs <<endl;
-*/
-
-    //we close the files after performing the becnhmark
-    /*for (int j = 0; j <numberfiles ; ++j) {
-            rb[j].close();
-    }*/
-    /*for(auto p:seq2file){
-        cout << p.first<<" "<<p.second<<" "<<seq2pos[p.first]<<endl;
-        istream is(&rb[p.second]);
-        is.seekg(seq2pos[p.first]);
-        auto s=ReadSeq(is);
-    }*/
 
 
 }
@@ -606,4 +547,3 @@ void BSeqDB::DumpCache() {
 uint BSeqDB::getNumberLRCahed() const {
     return lrcache.size();
 }
-

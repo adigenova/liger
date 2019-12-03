@@ -301,18 +301,11 @@ void EdgeS::get_longread_links(uint maxlr, vector<linking> &llinks) {
             }
         }
 
-        /*if(best_backbone == link.lonread_id){
-            best=link;
-        }*/
         if(counter >= maxlr){
             break;
         }
     }
 
-    /*if(best.lonread_id == best_backbone) {
-        cout << "Seected backbone "<< best.lid<<" "<<best.lonread_id<<" "<<long_reads_pass(best.lonread_id)<<endl;
-        llinks.push_back(best);
-    }*/
     //we clean the local hash before leave the funtion
     usedl.erase(usedl.begin(),usedl.end());
     vlonreads.erase(vlonreads.begin(),vlonreads.end());
@@ -416,4 +409,3 @@ bool EdgeS::isPolished() const {
 void EdgeS::setPolished(bool polished) {
     EdgeS::polished = polished;
 }
-

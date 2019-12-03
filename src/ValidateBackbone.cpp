@@ -66,22 +66,7 @@ GraphS* ValidateBackbone::Check_Backbone(int min_frag_len,int min_long_edge, Gra
     cout << "Max scaffold length ="<< max_scaff<<endl;
 
     //STEP 4: we compute the LQI and determine posibble miss-assemblies at the level of edges, contigs are already good quality?
-   // int total_deleted_edges=0;
-    //we reserve the vector
-   // vector<int> cov(max_scaff+1,0);
-    //cov.reserve(max_scaff+1);
-    //std::fill(cov.begin(),cov.end(),0);
-   /* for (auto p:lines) {
-        //we compute the LQI segments and breaks the scaffols lines if necessary, we break when physical coverage drops to 0 and we mark the nearest
-        //edge as deleted
-        total_deleted_edges+=p->LQI2break_lines(cover,min_long_edge,cov);
-    }
-    cov.clear();
-    //we delete the containers of the class
-   *//* nodes2lines.erase(nodes2lines.begin(),nodes2lines.end());
-    lines.erase(lines.begin(),lines.end());*//*
-    lines.clear();
-    nodes2lines.clear();*/
+
     //we validate the backbone here
     // 1. we sort the lines
 
@@ -186,14 +171,10 @@ int ValidateBackbone::validate_backbone(int max_scaff_size,int min_long_edge,Gra
 
         }
 
-        //we clear the buffer
-        //fill(cov.begin(),cov.begin()+maxpos,0);//takes 95 seconds
-        //cov.erase(cov.begin(),cov.end());
+
         std::fill(cov.begin(), cov.end(), 0);
 
-        /* for(auto lqi:results){
-             cout <<"LQI="<< lqi.edgeid<<" "<<lqi.start<<" "<<lqi.stop<<" "<<lqi.type<<endl;
-         }*/
+
         //if there are dangereusse edges and LQI segments
         if (results.size() > 0) {
             //we use a simple array to detect the
@@ -342,5 +323,3 @@ void ValidateBackbone::create_backbone_lines(GraphS *g,simplehash &circular_node
     bp.clear();
 
 }
-
-

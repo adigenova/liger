@@ -83,16 +83,10 @@ int SLines::add_fragment_to_line(uint64_t edge, uint32_t d, uint32_t var) {
         }
 
         f.d=dline; //we save the observed distance
-	//if(f.d+f.pos > node2posinline[this->get_last_in_path()]){
-        //    f.d=node2posinline[this->get_last_in_path()]-f.pos;
-        //}
-	
+
         f.path=true;
         //we save the fragment
         frags.push_back(f);
-        //log information
-        /*cout <<source<<" "<<target<<" "<<d<<" "<<var<<" "<<dline<<" "<<this->getPvar()
-             <<" "<<f.edgeid<<" "<<f.pos<<" "<<f.d<<endl;*/
 
         return 1;
     }
@@ -123,17 +117,11 @@ int SLines::add_fragment_to_line(uint64_t edge, uint32_t d, uint32_t var) {
                 end.pos=node2posinline[source];
                 end.d=node2posinline[this->get_last_in_path()]-node2posinline[source];
             }
-          /*  cout <<"C "<<node2posinline[source]<<" "<<node2posinline[target]<<" "<<node2posinline[this->get_last_in_path()]<<" "<<d<<" "<<var<<" "<<dline<<" "<<this->getPvar()
-                 <<" BEGIN "<<begin.edgeid<<" "<<begin.pos<<" "<<begin.d<<" END "<<end.edgeid<<" "<<end.pos<<" "<<end.d<<endl;*/
             //we store both fragments
             begin.path=true;
             end.path=true;
 
-	//we check that the distance is coherent with the circular one.    
-	//if(end.d+end.pos > node2posinline[this->get_last_in_path()]){
-         //   end.d=node2posinline[this->get_last_in_path()]-end.pos;
-        //}
-	     	 	
+
             frags.push_back(begin);
             frags.push_back(end);
             return 1;
@@ -175,8 +163,6 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
             }
             f.d=abs(start-end);
 
-            /*cout << "Pos ctg "<<u->getId()<< " in Line " << start<<" "<<end<<" "<<abs(start-end)
-                 <<" "<<f.pos<<" "<<f.d<<" "<<f.pos+f.d<<" "<<f.edgeid<<endl;*/
             //we save the fragment representing the contig in the collection
             f.contig=true;
             frags.push_back(f);
@@ -198,12 +184,12 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
                     f.pos=node2posinline[this->path[i+1]];
                 }
                 f.d=abs(node2posinline[this->path[i]]-node2posinline[this->path[i+1]]);
-		//we check that the distance is coherent with the circular one.    
+		//we check that the distance is coherent with the circular one.
 		if(f.d+f.pos > node2posinline[this->get_last_in_path()]){
 			cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
             		f.d=node2posinline[this->get_last_in_path()]-f.pos;
 			cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
-        	}	
+        	}
                 f.edge=true;
                 frags.push_back(f);
                /* cout << "Pos edge "<<f.edgeid<<" in Line "<<f.pos<<" "<<f.d<<" "<<f.pos+f.d<<endl;*/
@@ -217,20 +203,9 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
                     f.pos=node2posinline[this->path[i+1]];
                 }
                 f.d=abs(node2posinline[this->path[i]]-node2posinline[this->path[i+1]]);
-		//we check that the distance is coherent with the circular one.    
-		/*if(f.d+f.pos > node2posinline[this->get_last_in_path()]){
-			cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
-            		f.d=node2posinline[this->get_last_in_path()]-f.pos;
-			cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
-        	}*/
-	
 
                 f.edge=true;
-                //frags.push_back(f);
-                //cout << "DANGER EDGE "<<f.edgeid<<" in Line "<<f.pos<<" "<<f.d<<" "<<f.pos+f.d<<endl;
-                //ftree.push_back(PETree::interval(f.pos,f.pos+f.d, f.edgeid));
                 dfrags.push_back(f);
-                //dedges.push_back(f);
             }
         }
     }
@@ -338,8 +313,6 @@ int SLines::LQI2break_lines(GraphS* g, int min_long_edge, vector<int>& cov ) {
     }
 
     //we clear the buffer
-    //fill(cov.begin(),cov.begin()+maxpos,0);//takes 95 seconds
-    //cov.erase(cov.begin(),cov.end());
     std::fill(cov.begin(),cov.end(),0);
     //todo: move this stats to the ValidateBackbone class
     clock_t end = clock();
@@ -353,9 +326,6 @@ int SLines::LQI2break_lines(GraphS* g, int min_long_edge, vector<int>& cov ) {
     cout << "Time spent in interval check " << elapsed_secs <<" secs "<<endl;
     cout << "Total LQI intervals detected "<< results.size()<<endl;
     int number_of_deleted_edges=0;
-   /* for(auto lqi:results){
-        cout <<"LQI="<< lqi.edgeid<<" "<<lqi.start<<" "<<lqi.stop<<" "<<lqi.type<<endl;
-    }*/
     //if there are dangereusse edges and LQI segments
     if(results.size() > 0) {
         //we use a simple array to detect the
@@ -419,5 +389,3 @@ void SLines::sort_fragments() {
         return a.pos < b.pos;
     });
 }
-
-

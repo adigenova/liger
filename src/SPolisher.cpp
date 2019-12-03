@@ -372,9 +372,6 @@ void SPolisher::_map_contig2edges(int cid, vector<mmhit> &hitsdb) {
     for(auto h:localhits)
         //50% of contig aligned to the edge sequence
         if( (float) h.mlen/c.length > 0.5) {
-            /*printf("HIT: cid=%d eid=%d strand=%d qs=%d qe=%d rs=%d re=%d cnt=%d mlen=%d blen=%d clen=%d ccov=%d rep=%d\n",
-                   h.qid, h.tid, h.strand, h.qs, h.qe, h.rs, h.re, h.cnt, h.mlen, h.blen, c.length, c.coverage,
-                   c.repeat);*/
             //we save the hit to the hitdb database
             hitsdb.push_back(h);
         }
@@ -525,13 +522,7 @@ void SPolisher::hsps2hits(vector<mmhsp> & hsps, vector<mmhit> & localhits){
         lis.erase(lis.begin(),lis.end());
     }
 
-    /*//we print the hits if there are hits
-    for(auto h:localhits)
-        printf("HIT: cid=%d eid=%d strand=%d qs=%d qe=%d rs=%d re=%d cnt=%d mlen=%d blen=%d\n"
-                ,h.qid,h.tid,h.strand,h.qs,h.qe,h.rs,h.re,h.cnt,h.mlen,h.blen);
-*/
-    //we clean for the moment the local container
-    //localhits.erase(localhits.begin(),localhits.end());
+
 
 }
 
@@ -995,15 +986,6 @@ void SPolisher::_polish_edge2(vector<mmhit> & edgehits) {
     //identity is computing without taking into account the SNP, should we s
     float min_iden=0.8;//base identity
     //we have to be more strict because is only based on aligments
-    /*if(e->getEdge_avg_cns() >=5)
-        min_iden=0.9;
-    if(e->getEdge_avg_cns() >=10)
-        min_iden=0.95;
-    if(e->getEdge_avg_cns() >=15)
-        min_iden=0.97;
-    if(e->getEdge_avg_cns() >=20)
-        min_iden=0.98;
-*/
     // I have to select the best hits based on minimizer matches
     bool polished=false;
     //we select the best hits based on a simple greedy algorithm
@@ -1215,149 +1197,3 @@ void SPolisher::read_fasta(string filename, vector<ctg> & seqs){
         seqs.push_back(tmp);
     }
 }
-
-
-
-//minimap steps:
-//For each cluster, sort (qi,ti) by qi and solve a longest increasing sequence problem for ti. This finds the longest co-linear matching chain. Break the chain whenever there is a gap longer than -g=10000.
-
-//Output the start and end of the chain if it contains -c=4 or more minimizer matches and the matching length is no less than -L=40.
-
-/*static inline void mm_cal_fuzzy_len(mm_reg1_t *r, const mm128_t *a)
-{
-    int i;
-    r->mlen = r->blen = 0;
-    if (r->cnt <= 0) return;
-    r->mlen = r->blen = a[r->as].y>>32&0xff;
-    for (i = r->as + 1; i < r->as + r->cnt; ++i) {
-        int span = a[i].y>>32&0xff;
-        int tl = (int32_t)a[i].x - (int32_t)a[i-1].x;
-        int ql = (int32_t)a[i].y - (int32_t)a[i-1].y;
-        r->blen += tl > ql? tl : ql;
-        r->mlen += tl > span && ql > span? span : tl < ql? tl : ql;
-    }
-}*/
-
-//float identity = (float)r->mlen / r->blen;
-
-/* API DOCS
-typedef struct {
-int32_t id;             // ID for internal uses (see also parent below)
-int32_t cnt;            // number of minimizers; if on the reverse strand
-int32_t rid;            // reference index; if this is an alignment from inversion rescue
-int32_t score;          // DP alignment score
-int32_t qs, qe, rs, re; // query start and end; reference start and end
-int32_t parent, subsc;  // parent==id if primary; best alternate mapping score
-int32_t as;             // offset in the a[] array (for internal uses only)
-int32_t mlen, blen;     // seeded exact match length; seeded alignment block length
-int32_t n_sub;          // number of suboptimal mappings
-int32_t score0;         // initial chaining score (before chain merging/spliting)
- */
-
-//FAST-SG channing
-/*vector<hit> compute_score(vector<hit> &tfwd, int seqlen){
-    //we sort the array by ctg star
-    sort(tfwd.begin(),tfwd.end(),compare_by_ctg_pos);
-    hit mfwd=tfwd[0];
-    int mc=0;
-    vector<hit> index;
-    int add_last=0;
-    for (int i = 0; i < tfwd.size() ; i++) {
-        //means that both kmers comes from the same region
-        if((mfwd.ctg == tfwd[i].ctg) && (tfwd[i].pos-mfwd.pos <= seqlen)){
-            mc++;
-        }else{  //we add the last element to the array
-            mfwd.score=mc;
-            index.push_back(mfwd);
-            //we add a new mfwd
-            mc=1;
-            mfwd=tfwd[i];
-            mfwd.score=1;
-            if(i == tfwd.size() - 1){
-                add_last=1;
-            }
-        }
-    }
-    //we add the last kmer to the set because is has an score of 1
-    if(add_last){
-        index.push_back(mfwd);
-    }
-    //we add the kmer to the set because it has score max
-    if(mc == tfwd.size()){
-        mfwd.score=mc;
-        index.push_back(mfwd);
-    }
-    //we sort by score in order to print the output
-    sort(index.begin(),index.end(),compare_score);
-    return index;
-}*/
-
-
-/*minimap
-
-static void proc_intv(mm_tbuf_t *b, int which, int k, int min_cnt, int max_gap)
-{
-	int i, j, l_lis, rid = -1, rev = 0, start = b->intv.a[which].y, end = start + b->intv.a[which].x;
-
-	// make room for arrays needed by LIS (longest increasing sequence)
-	if (end - start > b->m) {
-		b->m = end - start;
-		kv_roundup32(b->m);
-		b->a = (uint64_t*)realloc(b->a, b->m * 8);
-		b->b = (size_t*)realloc(b->b, b->m * sizeof(size_t));
-		b->p = (size_t*)realloc(b->p, b->m * sizeof(size_t));
-	}
-
-	// prepare the input array _a_ for LIS
-	b->n = 0;
-	for (i = start; i < end; ++i)
-		if (b->coef.a[i].x != UINT64_MAX)
-			b->a[b->n++] = b->coef.a[i].y, rid = b->coef.a[i].x << 1 >> 33, rev = b->coef.a[i].x >> 63;
-	if (b->n < min_cnt) return;
-	radix_sort_64(b->a, b->a + b->n);
-
-	// find the longest increasing sequence
-	l_lis = rev? ks_lis_low32gt(b->n, b->a, b->b, b->p) : ks_lis_low32lt(b->n, b->a, b->b, b->p); // LIS
-	if (l_lis < min_cnt) return;
-	for (i = 1, j = 1; i < l_lis; ++i) // squeeze out minimizaers reused in the LIS sequence
-		if (b->a[b->b[i]]>>32 != b->a[b->b[i-1]]>>32)
-			b->a[b->b[j++]] = b->a[b->b[i]];
-	l_lis = j;
-	if (l_lis < min_cnt) return;
-
-	// convert LISes to regions; possibly break an LIS at a long gaps
-	for (i = 1, start = 0; i <= l_lis; ++i) {
-		int32_t qgap = i == l_lis? 0 : ((uint32_t)b->mini.a[b->a[b->b[i]]>>32].y>>1) - ((uint32_t)b->mini.a[b->a[b->b[i-1]]>>32].y>>1);
-		if (i == l_lis || (qgap > max_gap && abs((int32_t)b->a[b->b[i]] - (int32_t)b->a[b->b[i-1]]) > max_gap)) {
-			if (i - start >= min_cnt) {
-				uint32_t lq = 0, lr = 0, eq = 0, er = 0, sq = 0, sr = 0;
-				mm_reg1_t *r;
-				kv_pushp(mm_reg1_t, b->reg, &r);
-				r->rid = rid, r->rev = rev, r->cnt = i - start, r->rep = 0;
-				r->qs = ((uint32_t)b->mini.a[b->a[b->b[start]]>>32].y>>1) - (k - 1);
-				r->qe = ((uint32_t)b->mini.a[b->a[b->b[i-1]]>>32].y>>1) + 1;
-				r->rs = rev? (uint32_t)b->a[b->b[i-1]] : (uint32_t)b->a[b->b[start]];
-				r->re = rev? (uint32_t)b->a[b->b[start]] : (uint32_t)b->a[b->b[i-1]];
-				r->rs -= k - 1;
-				r->re += 1;
-				for (j = start; j < i; ++j) { // count the number of times each minimizer is used
-					int jj = b->a[b->b[j]]>>32;
-					b->mini.a[jj].y += 1ULL<<32;
-					kv_push(uint32_t, b->reg2mini, jj); // keep minimizer<=>reg mapping for derep
-				}
-				for (j = start; j < i; ++j) { // compute ->len
-					uint32_t q = ((uint32_t)b->mini.a[b->a[b->b[j]]>>32].y>>1) - (k - 1);
-					uint32_t r = (uint32_t)b->a[b->b[j]];
-					r = !rev? r - (k - 1) : (0x80000000U - r);
-					if (r > er) lr += er - sr, sr = r, er = sr + k;
-					else er = r + k;
-					if (q > eq) lq += eq - sq, sq = q, eq = sq + k;
-					else eq = q + k;
-				}
-				lr += er - sr, lq += eq - sq;
-				r->len = lr < lq? lr : lq;
-			}
-			start = i;
-		}
-	}
-}*/
