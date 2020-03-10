@@ -119,7 +119,7 @@ int ValidateBackbone::validate_backbone(int max_scaff_size,int min_long_edge,Gra
             avg_fragment_length += f.d;
             //we check the the fragment don't exceed the size of the container
             //cout <<"BUG: "<<maxpos<<" "<<stop<<" "<<f.pos<<" "<<f.d<<" "<<f.contig<<" "<<f.edge<<" "<<f.path<<endl;
-            assert(stop <= maxpos and stop >=0);
+            assert(stop <= maxpos and stop >=0 and f.pos >=0);
             total_fragments++;//this count every fragment
             //we store upto a maximum coverage not necessary more
             for (auto it = cov.begin() + f.pos, end = cov.begin() + stop;

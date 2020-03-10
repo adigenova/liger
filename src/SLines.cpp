@@ -23,7 +23,6 @@ void SLines::compute_pos_in_line(GraphS *g) {
         auto v=g->get_node(this->path[i+1]);
         node2posinline[this->path[i]]=tplen;
         //we print the coordiantes in the scf for each scaff
-       // cout << this->path[i] <<" "<<tplen<<" "<<this->node2posinline[this->path[i]]<<endl;
         //is a contig
         if(this->_check_edge(u->getCtg_id(),v->getCtg_id())){
             //length of the paths considering edges
@@ -37,7 +36,6 @@ void SLines::compute_pos_in_line(GraphS *g) {
     }
 
     node2posinline[this->path[i]]=tplen;
-    //cout << this->path[i] <<" "<<tplen<<" "<<this->node2posinline[this->path[i]]<<endl;
 }
 
 //we check if both nodes are in the Line
@@ -83,9 +81,10 @@ int SLines::add_fragment_to_line(uint64_t edge, uint32_t d, uint32_t var) {
         }
 
         f.d=dline; //we save the observed distance
-
+		
         f.path=true;
         //we save the fragment
+        if(f.pos >=0)
         frags.push_back(f);
 
         return 1;
@@ -121,8 +120,11 @@ int SLines::add_fragment_to_line(uint64_t edge, uint32_t d, uint32_t var) {
             begin.path=true;
             end.path=true;
 
-
+	//we check that the distance is coherent with the circular one.    
+	     	 	
+        if(begin.pos >=0)
             frags.push_back(begin);
+        if(end.pos >=0)
             frags.push_back(end);
             return 1;
         }
@@ -165,6 +167,9 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
 
             //we save the fragment representing the contig in the collection
             f.contig=true;
+	
+	
+           if(f.pos >=0)
             frags.push_back(f);
 
         }else{
@@ -184,15 +189,15 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
                     f.pos=node2posinline[this->path[i+1]];
                 }
                 f.d=abs(node2posinline[this->path[i]]-node2posinline[this->path[i+1]]);
-		//we check that the distance is coherent with the circular one.
+		//we check that the distance is coherent with the circular one.    
 		if(f.d+f.pos > node2posinline[this->get_last_in_path()]){
 			cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
             		f.d=node2posinline[this->get_last_in_path()]-f.pos;
 			cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
-        	}
+        	}	
                 f.edge=true;
+              if(f.pos >=0)
                 frags.push_back(f);
-               /* cout << "Pos edge "<<f.edgeid<<" in Line "<<f.pos<<" "<<f.d<<" "<<f.pos+f.d<<endl;*/
             }else{
                 //we save the non validated edges, they should be validated by a reduced edges or are the candidate for split
                 fragmentMP f;
@@ -203,8 +208,11 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
                     f.pos=node2posinline[this->path[i+1]];
                 }
                 f.d=abs(node2posinline[this->path[i]]-node2posinline[this->path[i+1]]);
+		//we check that the distance is coherent with the circular one.    
+	
 
                 f.edge=true;
+               if(f.pos >=0)
                 dfrags.push_back(f);
             }
         }
@@ -227,17 +235,16 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
     f.d=abs(start-end);
 	//we check that we dont exceed the size of the line this happend when we have some mate-edge overlaps
 	if(f.d+f.pos > node2posinline[this->get_last_in_path()]){
-		cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
+		//cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
             	f.d=node2posinline[this->get_last_in_path()]-f.pos;
-		cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
+		//cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
         }
     f.contig=true;
+    if(f.pos >=0)
     frags.push_back(f);
 
 
 
-    /*cout << "Pos ctg "<<u->getId()<< " in Line " << start<<" "<<end<<" "<<abs(start-end)
-         <<" "<<f.pos<<" "<<f.d<<" "<<f.pos+f.d<<" "<<f.edgeid<<endl;*/
 
 }
 //function that determine LQI segments within scaffolds
@@ -250,16 +257,12 @@ int SLines::LQI2break_lines(GraphS* g, int min_long_edge, vector<int>& cov ) {
     });
 
     //we print the sorted fragments, just to check that is a good one
-   /*for(auto f:frags){
-       cout <<"FRAGMENTS: POS="<< f.pos<<" D="<<f.d<<" STOP="<<f.pos+f.d<<" ID="<<f.edgeid<<" C="<<f.contig<<" E="<<f.edge<<" P="<<f.path<<endl;
-   }*/
     //we create the container that will hold all the queries
     clock_t begin = clock();
     //we fill the vector of counts wiht the fragments
     int maxpos=node2posinline[this->get_last_in_path()];
     cout << "Maxpos of fragment:"<<maxpos<<endl;
     assert(maxpos > 0 and maxpos <cov.size());
-    //vector<int> cov(maxpos,0);//todo change for a single vector like in intervalMiss
     std::fill(cov.begin(),cov.end(),0);//takes 95 seconds
     int  avg_fragment_length=0;
     for(auto f:frags) {
@@ -290,7 +293,6 @@ int SLines::LQI2break_lines(GraphS* g, int min_long_edge, vector<int>& cov ) {
                 stop=i;
             }else{
                 //is a new interval
-                //cout << "LQI " << current_contig<<" "<<start <<" "<<stop<<" "<<stop-start<<endl;
                 //we have to determine the edgeID to deleted
                 LQI r;
                 //r.ctgid=ctgid;
@@ -334,8 +336,6 @@ int SLines::LQI2break_lines(GraphS* g, int min_long_edge, vector<int>& cov ) {
                 //we check if there is an overlap with the danger edges
                 if((lqi.start>=d.pos  and lqi.start <=d.pos+d.d) or (lqi.stop>=d.pos  and lqi.stop <=d.pos+d.d)){
                     auto edge=g->get_edge(d.edgeid);
-                   /* cout <<"POTENTIAL QUIMERIC EDGES ARRAY: EID="<<d.edgeid<<" LQI_S="<<lqi.start<<" LQI_E="<<lqi.stop<<" EID="
-                         <<d.edgeid<<" E_S="<<d.pos<<" E_E="<<d.pos+d.d<<" "<<edge->getBw()<<" NLR="<<edge->getLong_reads().size()<<endl;*/
 
                     if(edge->getLong_reads().size() < min_long_edge) {
                         edge->setDeleted(true);
@@ -354,7 +354,6 @@ int SLines::LQI2break_lines(GraphS* g, int min_long_edge, vector<int>& cov ) {
     frags.clear();
     dfrags.clear();
     // we erase the hash
-    //node2posinline.erase(node2posinline.begin(),node2posinline.end());
     node2posinline.clear();
 
 
@@ -389,3 +388,5 @@ void SLines::sort_fragments() {
         return a.pos < b.pos;
     });
 }
+
+
