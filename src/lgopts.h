@@ -63,12 +63,21 @@ struct gengetopt_args_info
   int mcs_arg;	/**< @brief Minimum contig length in scaffolding (default='2000').  */
   char * mcs_orig;	/**< @brief Minimum contig length in scaffolding original value given at command line.  */
   const char *mcs_help; /**< @brief Minimum contig length in scaffolding help description.  */
-  float rcn_arg;	/**< @brief Repeat copy number factor (rcn) (default='1.5').  */
-  char * rcn_orig;	/**< @brief Repeat copy number factor (rcn) original value given at command line.  */
-  const char *rcn_help; /**< @brief Repeat copy number factor (rcn) help description.  */
+  int mcr_arg;	/**< @brief Minimum contig length in transitive reduction (default='2000').  */
+  char * mcr_orig;	/**< @brief Minimum contig length in transitive reduction original value given at command line.  */
+  const char *mcr_help; /**< @brief Minimum contig length in transitive reduction help description.  */
+  float rcn_arg;	/**< @brief Repeat copy number factor reduction (rcn) (default='1.5').  */
+  char * rcn_orig;	/**< @brief Repeat copy number factor reduction (rcn) original value given at command line.  */
+  const char *rcn_help; /**< @brief Repeat copy number factor reduction (rcn) help description.  */
+  float rct_arg;	/**< @brief Repeat copy number factor backbone  (rct) (default='1.5').  */
+  char * rct_orig;	/**< @brief Repeat copy number factor backbone  (rct) original value given at command line.  */
+  const char *rct_help; /**< @brief Repeat copy number factor backbone  (rct) help description.  */
   int lme_arg;	/**< @brief Length of long mate-edges (default='100000').  */
   char * lme_orig;	/**< @brief Length of long mate-edges original value given at command line.  */
   const char *lme_help; /**< @brief Length of long mate-edges help description.  */
+  int mit_arg;	/**< @brief Max iterations per edge in transitive reduction (default='1000000').  */
+  char * mit_orig;	/**< @brief Max iterations per edge in transitive reduction original value given at command line.  */
+  const char *mit_help; /**< @brief Max iterations per edge in transitive reduction help description.  */
   int nlm_arg;	/**< @brief Number of long-read needed to keep a potencial erroneus mate-edge (default='5').  */
   char * nlm_orig;	/**< @brief Number of long-read needed to keep a potencial erroneus mate-edge original value given at command line.  */
   const char *nlm_help; /**< @brief Number of long-read needed to keep a potencial erroneus mate-edge help description.  */
@@ -95,8 +104,11 @@ struct gengetopt_args_info
   unsigned int ccoverage_given ;	/**< @brief Whether ccoverage was given.  */
   unsigned int mcl_given ;	/**< @brief Whether mcl was given.  */
   unsigned int mcs_given ;	/**< @brief Whether mcs was given.  */
+  unsigned int mcr_given ;	/**< @brief Whether mcr was given.  */
   unsigned int rcn_given ;	/**< @brief Whether rcn was given.  */
+  unsigned int rct_given ;	/**< @brief Whether rct was given.  */
   unsigned int lme_given ;	/**< @brief Whether lme was given.  */
+  unsigned int mit_given ;	/**< @brief Whether mit was given.  */
   unsigned int nlm_given ;	/**< @brief Whether nlm was given.  */
   unsigned int mlp_given ;	/**< @brief Whether mlp was given.  */
   unsigned int minimizer_size_given ;	/**< @brief Whether minimizer_size was given.  */

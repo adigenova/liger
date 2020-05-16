@@ -15,10 +15,6 @@ BFilling::BFilling(GraphS *lines, string fastalongreads, string prefix) {
     //we build the paths to determine the edge order -> long read order for building the long read bank
     //STEP 1: We build  and order the lines by length
     build_lines();
-    //we print the lines order, we can order the paths by length before going to the shorter paths
-    //for(auto p:linesP){
-      //  p->print_path();
-    //}
     //we sort the paths from largest to shortest
     sort( linesP.begin( ), linesP.end( ), [ ]( const SLines* a, const SLines* b)
     {
@@ -26,9 +22,6 @@ BFilling::BFilling(GraphS *lines, string fastalongreads, string prefix) {
     });
 
     //STEP2: having the lines ordered, we can determine the edge ordering and subsequence the long read ordering
-    /*for(auto p:linesP){
-      p->print_path();
-    }*/
     //we determine the edges order
 
     for(auto p:linesP){
@@ -63,7 +56,6 @@ BFilling::BFilling(GraphS *lines, string fastalongreads, string prefix) {
                     lcache[l]=current-lorder[l];
                 }
             }
-            //cout <<"LRO "<<i<<" "<<eids[i]<<" "<<l.first<<" Order "<<lorder[l.first]<<endl;
             countle[l]++;
         }
     }
@@ -93,6 +85,7 @@ BFilling::BFilling(GraphS *lines, string fastalongreads, string prefix) {
     //todo: change the contig name file
     bflog.open(this->prefix+".BFilling.log");
     bflog << "EID Proper_Gap Low_Iden Exact_Overlap Estimated_distance Estimated_distance_std Gap_Consensus_Coverage Coverage_source_end Identity_source_end Coverage_target_end Identity_target_end"<<endl;
+
 
 }
 
@@ -164,6 +157,7 @@ void * threaded_edges(void* args) {
 void BFilling::print_cns_info(uint64_t eid){
     auto e=linesG->get_edge(eid);
     //I have to store more information as the avg identity and coverage of the flanking nodes
+   //bflog << "EID Proper_Gap Low_Iden Exact_Overlap Estimated_distance Gap_Consensus_Coverage Coverage_source_end Identity_source_end Coverage_target_end Identity_target_end"<<endl;
     bflog <<eid<<" "<<e->isEdge_proper_gap()<<" "<<e->isEdge_low_identity()<<" "<<e->getEdge_overlap()<<" "<<e->getBd()
           <<" "<<e->getBd_std()<<" "<<e->getEdge_avg_cns()<<" "<<e->getCovs()<<" "<<e->getIdens() <<" "<<e->getCovt()<<" "<<e->getIdent()<<endl;
 
@@ -285,7 +279,6 @@ void BFilling::get_edgeseq_ends(EdgeS* e,int d,string &seq_end_source, string &s
         //-
         seq_end_source=revcomp(source_seq.substr(0,d));
     }
-    //cout <<target<< " "<<nodes2orientations[target]<<" "<<target_seq.substr(0,abs(e->getBd()))<<endl;
     //string seq_o_target="";
     if(nodes2orientations[target] == 1){
         //+
@@ -316,8 +309,7 @@ void BFilling::fillseqs2(uint64_t eid, int n_reads,vector<string> & lseqs,  vect
     for(auto l:lin) {
         //should move this call to the calling method because we need to
         auto seq = longreadDB->ChunkGetSeq(l.lonread_id);
-        //cout << l.c1<<" "<<l.c2<<" "<<l.lonread_id<<" "<<l.p1<<" "
-        //    <<l.p2<<" "<<l.switched<<" "<<l.gaps<<" "<<l.gape<<" "<<l.ror1<<" "<<l.ror2<<" "<<seq.seq.substr(l.gaps,l.gape-l.gaps)<<endl;
+
         auto subseq = seq.seq.substr(l.gaps, l.gape - l.gaps);
         //I need to check the aligment strand for the long reads
         if (l.switched) {
@@ -419,8 +411,6 @@ void BFilling::build_lines() {
                 p->add_node(lemonTog[path[i]]);
                 nodes2lines[lemonTog[path[i]]]=current_path;
                 //nodes2orientations[]
-                /*if(circular_nodes.count(lemonTog[path[i]]))
-                    p->set_as_circular(circular_nodes[lemonTog[path[i]]]);*/
             }
             //we set the orientation of the nodes in the line
             for (int i=0; i<path.size()-1; i++) {
@@ -459,3 +449,4 @@ void BFilling::build_lines() {
     //we destroy the tmp lemon graph
     bp.clear();
 }
+

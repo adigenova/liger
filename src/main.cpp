@@ -51,14 +51,18 @@ int main (int argc, char* argv[]){
     auto gori=new GraphS(contigs,libs,ai.mcs_arg);
     //This object perform the transitive reduction of the graph it compute the biconnected components and the search for paths
     TReduction tr;
-    auto reduced=tr.transitive_reduction(ai.lme_arg,gori);
+    auto reduced=tr.transitive_reduction(ai.lme_arg,ai.mit_arg,gori);
+
     //Matching Cover of the graph
     MatchingS mc;
-    auto mcg=mc.matching_cover(reduced);
-    //we write an AGP file for each cover
     G2Seq g2s;
+
+    //we compute various parameters
+    auto avg_ctg=contigs->getAvg_ctg_cov();
+    //default run default
+    auto mcg=mc.matching_cover(reduced,ai.rct_arg*avg_ctg,ai.mcr_arg);
+    //we write an AGP file for each cover
     g2s.graph2agp(mcg,prefix+".MCover.raw.agp");
-    //mcg->print_graph("MatchingCG");
     //we obtained the chains
     //we create the Validation object
     ValidateBackbone eval;
@@ -66,27 +70,19 @@ int main (int argc, char* argv[]){
     auto vmcg=eval.Check_Backbone(ai.mlp_arg,ai.nlm_arg,mcg, tr.get_reduced_edges(), mc.get_circular_nodes());
     //we write an AGP file of the validated lines
     g2s.graph2agp(vmcg,prefix+".MCover.val.agp");
-
     //class that fill the gaps in the backbone it use SPOA and FASTER-SMITh-WATERMAN, coupled of with alignment-free and graph methods.
     //We fill the GAPs using the long-reads consensus and the reduced Graph to place repetitive contigs
     auto gapfiller=new BFilling(vmcg,ai.longreads_arg,prefix);
     //we create the edge consensus unsing the number of cores specified
     gapfiller->create_edge_consensus(cores);
-    //we write the fasta file of scaffolds filled -> hybrid contigs
-    g2s.graph2seq(vmcg,prefix+".Unpolished", false);
     //then links are not available anymore
     libs->clear_links();
     //Graph polisher
     auto polishing = new GPolisher(reduced,vmcg,cores);
     polishing->polish();
-
+     //Contigs using in the GPolisher step
     auto ctg_used_in_gpolished=polishing->get_ctg_used_in_polishing();
-
-    //we write the fasta file of the polished sequence
-    g2s.graph2seq(vmcg,prefix+".GPolished",false);
-    //Sequence alignment polisher
-
-    //auto sp=new SPolisher(15,5,200,vmcg);//k,w.mf
+    //SPolisher
     auto sp=new SPolisher(ai.minimizer_size_arg,ai.minimizer_window_arg,ai.minimizer_freq_arg,vmcg);//k,w.mf
     //we build the kmer-index
     sp->build_edge_index();

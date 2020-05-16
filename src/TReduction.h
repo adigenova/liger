@@ -28,13 +28,17 @@ typedef unordered_map<uint64_t, pair<int,int>> hash2pair64;
 //class that perform a Transitive reduction of the graph
 class TReduction {
 private:
+
     //this store the reduced edges and the distance selected
     hash2pair64 reduced_edges;
 
 public:
-    GraphS* transitive_reduction(int lme, GraphS* g);
 
-    int look_for_a_path(int lme,GraphS* g, ListGraph &bp, EdgeS* e, int bi, hashhash &bcc2nodes, simplehash &gToLemon,simplehash &lemonTog);
+
+    GraphS* transitive_reduction(int lme, int max_iteration, GraphS* g);
+
+    int look_for_a_path(int lme,int max_iteration,GraphS* g, ListGraph &bp, EdgeS* e, int bi, hashhash &bcc2nodes, simplehash &gToLemon,simplehash &lemonTog);
+    //int look_for_a_path(int lme,int max_iteration, int bi, int eid,ListGraph &bp);
     //print the reduced edges ID, path length, path variance?, score?
     void print_reduced_edges();
     //get a pointer to the reduced edges to use them in the validation step

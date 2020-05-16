@@ -66,7 +66,6 @@ GraphS* ValidateBackbone::Check_Backbone(int min_frag_len,int min_long_edge, Gra
     cout << "Max scaffold length ="<< max_scaff<<endl;
 
     //STEP 4: we compute the LQI and determine posibble miss-assemblies at the level of edges, contigs are already good quality?
-
     //we validate the backbone here
     // 1. we sort the lines
 
@@ -119,11 +118,15 @@ int ValidateBackbone::validate_backbone(int max_scaff_size,int min_long_edge,Gra
             avg_fragment_length += f.d;
             //we check the the fragment don't exceed the size of the container
             //cout <<"BUG: "<<maxpos<<" "<<stop<<" "<<f.pos<<" "<<f.d<<" "<<f.contig<<" "<<f.edge<<" "<<f.path<<endl;
-            assert(stop <= maxpos and stop >=0 and f.pos >=0);
+            //assert(stop <= maxpos and stop >=0 and f.pos >=0);
+             if (stop <= maxpos and stop >=0 and f.pos >=0){
             total_fragments++;//this count every fragment
             //we store upto a maximum coverage not necessary more
             for (auto it = cov.begin() + f.pos, end = cov.begin() + stop;
                  it != end; ++it) { if(*it < 250){*it += 1;} }//takes 71.5984 secs
+	    }else{
+             cout <<"FRG_OUTR: "<<maxpos<<" "<<stop<<" "<<f.pos<<" "<<f.d<<" "<<f.contig<<" "<<f.edge<<" "<<f.path<<endl;
+	    }	
         }
 
         //variables to determine LQI segments
@@ -171,9 +174,7 @@ int ValidateBackbone::validate_backbone(int max_scaff_size,int min_long_edge,Gra
 
         }
 
-
         std::fill(cov.begin(), cov.end(), 0);
-
 
         //if there are dangereusse edges and LQI segments
         if (results.size() > 0) {
@@ -323,3 +324,5 @@ void ValidateBackbone::create_backbone_lines(GraphS *g,simplehash &circular_node
     bp.clear();
 
 }
+
+

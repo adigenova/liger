@@ -44,9 +44,12 @@ const char *gengetopt_args_info_help[] = {
   "\nAdvanced liger options:\n\nShort-contigs options:",
   "      --mcl=INT               Minimum contig length  (default=`500')",
   "      --mcs=INT               Minimum contig length in scaffolding\n                                (default=`2000')",
-  "      --rcn=FLOAT             Repeat copy number factor (rcn)  (default=`1.5')",
+  "      --mcr=INT               Minimum contig length in transitive reduction\n                                (default=`2000')",
+  "      --rcn=FLOAT             Repeat copy number factor reduction (rcn)\n                                (default=`1.5')",
+  "      --rct=FLOAT             Repeat copy number factor backbone  (rct)\n                                (default=`1.5')",
   "\nLong-reads overlap options:",
   "      --lme=INT               Length of long mate-edges  (default=`100000')",
+  "      --mit=INT               Max iterations per edge in transitive reduction\n                                (default=`1000000')",
   "\nValidatation of lines options:",
   "      --nlm=INT               Number of long-read needed to keep a potencial\n                                erroneus mate-edge  (default=`5')",
   "      --mlp=INT               Minimum length of reduced paths to convert them\n                                to physical fragments  (default=`20000')",
@@ -91,8 +94,11 @@ void clear_given (struct gengetopt_args_info *args_info)
   args_info->ccoverage_given = 0 ;
   args_info->mcl_given = 0 ;
   args_info->mcs_given = 0 ;
+  args_info->mcr_given = 0 ;
   args_info->rcn_given = 0 ;
+  args_info->rct_given = 0 ;
   args_info->lme_given = 0 ;
+  args_info->mit_given = 0 ;
   args_info->nlm_given = 0 ;
   args_info->mlp_given = 0 ;
   args_info->minimizer_size_given = 0 ;
@@ -120,10 +126,16 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->mcl_orig = NULL;
   args_info->mcs_arg = 2000;
   args_info->mcs_orig = NULL;
+  args_info->mcr_arg = 2000;
+  args_info->mcr_orig = NULL;
   args_info->rcn_arg = 1.5;
   args_info->rcn_orig = NULL;
+  args_info->rct_arg = 1.5;
+  args_info->rct_orig = NULL;
   args_info->lme_arg = 100000;
   args_info->lme_orig = NULL;
+  args_info->mit_arg = 1000000;
+  args_info->mit_orig = NULL;
   args_info->nlm_arg = 5;
   args_info->nlm_orig = NULL;
   args_info->mlp_arg = 20000;
@@ -152,13 +164,16 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->ccoverage_help = gengetopt_args_info_help[7] ;
   args_info->mcl_help = gengetopt_args_info_help[9] ;
   args_info->mcs_help = gengetopt_args_info_help[10] ;
-  args_info->rcn_help = gengetopt_args_info_help[11] ;
-  args_info->lme_help = gengetopt_args_info_help[13] ;
-  args_info->nlm_help = gengetopt_args_info_help[15] ;
-  args_info->mlp_help = gengetopt_args_info_help[16] ;
-  args_info->minimizer_size_help = gengetopt_args_info_help[18] ;
-  args_info->minimizer_window_help = gengetopt_args_info_help[19] ;
-  args_info->minimizer_freq_help = gengetopt_args_info_help[20] ;
+  args_info->mcr_help = gengetopt_args_info_help[11] ;
+  args_info->rcn_help = gengetopt_args_info_help[12] ;
+  args_info->rct_help = gengetopt_args_info_help[13] ;
+  args_info->lme_help = gengetopt_args_info_help[15] ;
+  args_info->mit_help = gengetopt_args_info_help[16] ;
+  args_info->nlm_help = gengetopt_args_info_help[18] ;
+  args_info->mlp_help = gengetopt_args_info_help[19] ;
+  args_info->minimizer_size_help = gengetopt_args_info_help[21] ;
+  args_info->minimizer_window_help = gengetopt_args_info_help[22] ;
+  args_info->minimizer_freq_help = gengetopt_args_info_help[23] ;
   
 }
 
@@ -255,8 +270,11 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
   free_string_field (&(args_info->ccoverage_orig));
   free_string_field (&(args_info->mcl_orig));
   free_string_field (&(args_info->mcs_orig));
+  free_string_field (&(args_info->mcr_orig));
   free_string_field (&(args_info->rcn_orig));
+  free_string_field (&(args_info->rct_orig));
   free_string_field (&(args_info->lme_orig));
+  free_string_field (&(args_info->mit_orig));
   free_string_field (&(args_info->nlm_orig));
   free_string_field (&(args_info->mlp_orig));
   free_string_field (&(args_info->minimizer_size_orig));
@@ -312,10 +330,16 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "mcl", args_info->mcl_orig, 0);
   if (args_info->mcs_given)
     write_into_file(outfile, "mcs", args_info->mcs_orig, 0);
+  if (args_info->mcr_given)
+    write_into_file(outfile, "mcr", args_info->mcr_orig, 0);
   if (args_info->rcn_given)
     write_into_file(outfile, "rcn", args_info->rcn_orig, 0);
+  if (args_info->rct_given)
+    write_into_file(outfile, "rct", args_info->rct_orig, 0);
   if (args_info->lme_given)
     write_into_file(outfile, "lme", args_info->lme_orig, 0);
+  if (args_info->mit_given)
+    write_into_file(outfile, "mit", args_info->mit_orig, 0);
   if (args_info->nlm_given)
     write_into_file(outfile, "nlm", args_info->nlm_orig, 0);
   if (args_info->mlp_given)
@@ -1215,8 +1239,11 @@ cmdline_parser_internal (
         { "ccoverage",	1, NULL, 'd' },
         { "mcl",	1, NULL, 0 },
         { "mcs",	1, NULL, 0 },
+        { "mcr",	1, NULL, 0 },
         { "rcn",	1, NULL, 0 },
+        { "rct",	1, NULL, 0 },
         { "lme",	1, NULL, 0 },
+        { "mit",	1, NULL, 0 },
         { "nlm",	1, NULL, 0 },
         { "mlp",	1, NULL, 0 },
         { "minimizer_size",	1, NULL, 'm' },
@@ -1389,7 +1416,21 @@ cmdline_parser_internal (
               goto failure;
           
           }
-          /* Repeat copy number factor (rcn).  */
+          /* Minimum contig length in transitive reduction.  */
+          else if (strcmp (long_options[option_index].name, "mcr") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->mcr_arg), 
+                 &(args_info->mcr_orig), &(args_info->mcr_given),
+                &(local_args_info.mcr_given), optarg, 0, "2000", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "mcr", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Repeat copy number factor reduction (rcn).  */
           else if (strcmp (long_options[option_index].name, "rcn") == 0)
           {
           
@@ -1399,6 +1440,20 @@ cmdline_parser_internal (
                 &(local_args_info.rcn_given), optarg, 0, "1.5", ARG_FLOAT,
                 check_ambiguity, override, 0, 0,
                 "rcn", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Repeat copy number factor backbone  (rct).  */
+          else if (strcmp (long_options[option_index].name, "rct") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->rct_arg), 
+                 &(args_info->rct_orig), &(args_info->rct_given),
+                &(local_args_info.rct_given), optarg, 0, "1.5", ARG_FLOAT,
+                check_ambiguity, override, 0, 0,
+                "rct", '-',
                 additional_error))
               goto failure;
           
@@ -1413,6 +1468,20 @@ cmdline_parser_internal (
                 &(local_args_info.lme_given), optarg, 0, "100000", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "lme", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* Max iterations per edge in transitive reduction.  */
+          else if (strcmp (long_options[option_index].name, "mit") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->mit_arg), 
+                 &(args_info->mit_orig), &(args_info->mit_given),
+                &(local_args_info.mit_given), optarg, 0, "1000000", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "mit", '-',
                 additional_error))
               goto failure;
           

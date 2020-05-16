@@ -372,7 +372,6 @@ void BSeqDB::testRead(unordered_map<uint32_t,uint32_t> & lorder) {
    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     cout << "TotalSeqs : "<<totalseqs<<". Time spent in "<< q<<" queries  from chunk" << elapsed_secs <<endl;
 
-
 }
 
 void BSeqDB::DBdump() {
@@ -547,3 +546,4 @@ void BSeqDB::DumpCache() {
 uint BSeqDB::getNumberLRCahed() const {
     return lrcache.size();
 }
+

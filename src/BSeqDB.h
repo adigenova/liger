@@ -29,6 +29,7 @@ using namespace std;
 /* useful constants */
 
 typedef unordered_map<uint32_t , uint32_t > simplehashu;//unsinged integers
+//typedef unordered_map<int , int > simplehash;
 
 
 struct bseq{

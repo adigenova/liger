@@ -168,7 +168,6 @@ cehits CJoiner::compute_optimal_aligment_trim(string &q, string &t, bool log, in
         printf("qs=%d qe=%d qc=%d ts=%d te=%d iden=%f\n",rtrim.qstart,rtrim.qstop,rtrim.qcov,rtrim.tstart,rtrim.tstop,rtrim.iden);
 
 
-
     } else {
         printf("Error computing edit distance on CJoiner class\n");
         exit(1);
@@ -257,7 +256,6 @@ void CJoiner::contigs_best_fit(string &source_end, string &target_end, string &c
 
     //we compute the onserved distance
     int d_obs=this->get_obs_distance_hits(&s2c,&t2c);
-
     //we compare the d_obs to the expected one considering the std or a maximum desviation of 10%
     // u+- 3*std= 99.7% of cases
     if(abs(d_obs-e->getBd()) < 4 * max(e->getBd_std(),(int)(e->getBd()*0.1+0.5))){
@@ -323,7 +321,6 @@ void CJoiner::contigs_best_fit(string &source_end, string &target_end, string &c
             //we check if we found a good result
              if((selected_al>=0 and selected_bl >=0) and (abs(best_distl-e->getBd()) < 4 * max(e->getBd_std(),(int)(e->getBd()*0.1+0.5)))){
 
-
                  char c=(char)1;//there is only one long read
                  string long_reads_coverage_s (local_lonread.length(), c);
                  this->fill_edge_variables(best_distl,revcns,e,local_lonread,long_reads_coverage_s,hsourcel[selected_al],htargetl[selected_bl]);
@@ -382,7 +379,6 @@ void CJoiner::fill_edge_variables(int distance_obs,bool revcns, EdgeS* e , strin
         e->setEdge_overlap(distance_obs);
     }else{
         //we have to assert that the source is previous to the target
-      
 
         auto cstart=sh.tstop+1;
         auto cstop=th.tstart-1;
@@ -467,3 +463,5 @@ void CJoiner::printAlignment(const char* query, const char* target, const unsign
     }
     printf("\n");
 }
+
+

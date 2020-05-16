@@ -78,6 +78,9 @@ void EdgeS::_blunding_edge() {
         this->bd = int(p / q);
         //bundled std
         this->bd_std=int(1/sqrt(q));
+        if(this->bd_std == INT32_MAX or this->bd_std == INT32_MIN){
+            this->bd_std=int(p/q*0.1);
+        }
         //raw w
         this->rw = int(distance.size());
         //if the selected links is smaller than the total number of links means that we discarded some edges
@@ -409,3 +412,4 @@ bool EdgeS::isPolished() const {
 void EdgeS::setPolished(bool polished) {
     EdgeS::polished = polished;
 }
+

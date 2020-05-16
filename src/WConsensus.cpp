@@ -25,7 +25,7 @@ WConsensus::WConsensus(vector<linking> &lin, vector<string> &seqs, string &leads
             break;
         }
     }
-
+     	
     //we populate the vector with the consensus vector
     for(int i=0; i<ls.length(); i+=wsize){
         cwindow tmp;
@@ -206,7 +206,6 @@ string WConsensus::generate_consensus2(vector<cwindow> & window, vector<string> 
 
     vector<uint32_t> coverages;
     consensus_ = graph->generate_consensus(coverages);
-
 
     uint32_t average_begin = (sbegin) / 2;
 
@@ -456,3 +455,9 @@ string WConsensus::get_coverage_cns_string() {
 
     return cons_d;
 }
+
+
+
+
+
+

@@ -36,6 +36,7 @@ void SLines::compute_pos_in_line(GraphS *g) {
     }
 
     node2posinline[this->path[i]]=tplen;
+
 }
 
 //we check if both nodes are in the Line
@@ -81,11 +82,13 @@ int SLines::add_fragment_to_line(uint64_t edge, uint32_t d, uint32_t var) {
         }
 
         f.d=dline; //we save the observed distance
+
 		
         f.path=true;
         //we save the fragment
         if(f.pos >=0)
         frags.push_back(f);
+        //log information
 
         return 1;
     }
@@ -121,6 +124,7 @@ int SLines::add_fragment_to_line(uint64_t edge, uint32_t d, uint32_t var) {
             end.path=true;
 
 	//we check that the distance is coherent with the circular one.    
+
 	     	 	
         if(begin.pos >=0)
             frags.push_back(begin);
@@ -198,6 +202,7 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
                 f.edge=true;
               if(f.pos >=0)
                 frags.push_back(f);
+
             }else{
                 //we save the non validated edges, they should be validated by a reduced edges or are the candidate for split
                 fragmentMP f;
@@ -209,9 +214,10 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
                 }
                 f.d=abs(node2posinline[this->path[i]]-node2posinline[this->path[i+1]]);
 		//we check that the distance is coherent with the circular one.    
-	
+
 
                 f.edge=true;
+
                if(f.pos >=0)
                 dfrags.push_back(f);
             }
@@ -235,9 +241,9 @@ void SLines::add_edges_contigs_to_line(GraphS *g, int min_frag_len) {
     f.d=abs(start-end);
 	//we check that we dont exceed the size of the line this happend when we have some mate-edge overlaps
 	if(f.d+f.pos > node2posinline[this->get_last_in_path()]){
-		//cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
+		cout <<"CORP:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
             	f.d=node2posinline[this->get_last_in_path()]-f.pos;
-		//cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
+		cout <<"CORA:"<<f.d<<" "<<f.pos<<" "<<node2posinline[this->get_last_in_path()]<<endl;
         }
     f.contig=true;
     if(f.pos >=0)

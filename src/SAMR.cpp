@@ -164,7 +164,8 @@ shortread SAMR::parse_entry(string original){
     rp.contig=results[2];
     //read orientation for single and paired reads aligments
     rp.ori= (atoi(results[1].c_str()) & 16) ? false : true;
-    rp.len=int(results[9].length());
+    //rp.len=int(results[9].length());
+    rp.len=atoi(results[5].c_str());
     rp.pos=atoi(results[3].c_str());
     rp.lid=atoi(results[0].substr(0, results[0].find("_FG_")).c_str());
     //rp.gap=results[19].substr(5,results[19].length()-5);

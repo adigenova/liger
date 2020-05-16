@@ -193,7 +193,6 @@ void Contig::mark_repeats(string filename) {
     this->avg_ctg_cov=compute_average(ocov);
     this->std_ctg_cov=compute_std(ocov,this->avg_ctg_cov);
 
-  
     //I want the upper coverage
     float max = float(avg_ctg_cov+2.5*std_ctg_cov+0.5);
     int repeats=0;
@@ -281,3 +280,4 @@ int Contig::check_long_read(int id, const int lr) {
         return 0;
     }
 }
+

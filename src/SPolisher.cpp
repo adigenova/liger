@@ -986,6 +986,7 @@ void SPolisher::_polish_edge2(vector<mmhit> & edgehits) {
     //identity is computing without taking into account the SNP, should we s
     float min_iden=0.8;//base identity
     //we have to be more strict because is only based on aligments
+
     // I have to select the best hits based on minimizer matches
     bool polished=false;
     //we select the best hits based on a simple greedy algorithm

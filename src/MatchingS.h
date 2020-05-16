@@ -26,6 +26,8 @@ public:
     GraphS* matching_cover(GraphS* g);
     //return a hash containining the nodes being circular
     simplehash & get_circular_nodes(){return circular;};
+    GraphS* matching_cover(GraphS* g, float max_repeat_factor, int short_ctg_length);
+
 
 };
 

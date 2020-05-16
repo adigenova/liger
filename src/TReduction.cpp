@@ -4,7 +4,7 @@
 
 #include "TReduction.h"
 
-GraphS* TReduction::transitive_reduction(int lme,GraphS *g) {
+GraphS* TReduction::transitive_reduction(int lme, int max_iter, GraphS *g) {
     //we create the Lemon graph to perform the sets of operations that we want to compute
     ListGraph bp;
     simplehash gToLemon;
@@ -79,7 +79,7 @@ GraphS* TReduction::transitive_reduction(int lme,GraphS *g) {
 
 
     //we reduce the edges
-    int total_iterations=0;
+    uint64_t total_iterations=0;
     //todo: build a threaded version when  the scaffodling graph is large and there are egdes larger than 120kb, as is the case of the low-memory pipeline.
     //step one sort the edges by distance within each BCC
      for(auto bi:bcc2reduce){
@@ -88,7 +88,8 @@ GraphS* TReduction::transitive_reduction(int lme,GraphS *g) {
          //we attempt to reduce the edges of the BCC in increasing order and distance
          for(auto e:bi.second){
              auto es=g->get_edge_by_id(e);
-             total_iterations+=this->look_for_a_path(lme,g,bp,es,bi.first,bcc2nodes,gToLemon,lemonTog);
+             total_iterations+=this->look_for_a_path(lme,max_iter,g,bp,es,bi.first,bcc2nodes,gToLemon,lemonTog);
+             //total_iterations+=this->look_for_a_path(lme,max_iter,bi.first,e,bp);
              //cout <<"SORTING edges: "<<bi.first<<" "<<es->getEdge()<<" "<<es->getBw()<<" "<<es->getBd()<<" "<<es->getBd_std()<<endl;
          }
      }
@@ -103,20 +104,15 @@ GraphS* TReduction::transitive_reduction(int lme,GraphS *g) {
 
 
 //we reduce the edges
-int  TReduction::look_for_a_path(int lme,GraphS* g, ListGraph &bp,EdgeS* e, int bi, hashhash &bcc2nodes,simplehash &gToLemon,simplehash &lemonTog){
-    //we obtain the nodes from the edge
+int  TReduction::look_for_a_path(int lme,int max_iteration,GraphS* g, ListGraph &bp,EdgeS* e, int bi, hashhash &bcc2nodes,simplehash &gToLemon,simplehash &lemonTog){
+
     auto u=g->get_node(e->getSource());
     auto v=g->get_node(e->getTarget());
     //init path from u-> source
     auto p=new PathS(u->getId());
-    //std::unique_ptr<auto> p = make_unique<PathS>(u->getId());
-    //std::unique_ptr<PathS> p( new PathS(u->getId()) );
-    //unique_ptr<PathS> p(new PathS(u->getId()));
     //paths cointainers
     vector<PathS*> paths;//paths to look for
     vector<PathS*> vpaths;//paths founds as valid in length with respect to the reduced edge
-    //vector<unique_ptr<PathS* > > paths;
-    //vector<unique_ptr<PathS* > > vpaths;
     bool ulong=0;
 	if(e->getBd() >= lme )
 	ulong=1;
@@ -128,9 +124,7 @@ int  TReduction::look_for_a_path(int lme,GraphS* g, ListGraph &bp,EdgeS* e, int 
         //we got a copy of the last added path
         auto pc=paths.back();
         iter++;
-	//for ultra long edges we perform upto 20Million iterations, to keep the combinatory under control.
-    //if(iter >=20000000)
-	if(ulong ==true and iter >=20000000)
+       if(iter >=max_iteration)  //20 million iterations as maximum per default
 	   	break;
         //we remove the path from the
         paths.pop_back();
@@ -146,9 +140,9 @@ int  TReduction::look_for_a_path(int lme,GraphS* g, ListGraph &bp,EdgeS* e, int 
                     //for ultra long edges we just consider the fisrt 100 valid paths, to reduce the search
                     if(vpaths.size() >=100 and ulong == true)
                         break;
-		    //we look upto 1000 paths, ussually is a repeat not masked, again to keep the combinatories under control
-                    if(vpaths.size() >=1000)
-                        break;  		
+		            //we look upto 1000 paths, ussually is a repeat not masked, again to keep the combinatories under control
+                    if(vpaths.size() >= 1000)
+                        break;
                 } else {
                     delete pc;
                 }
@@ -234,13 +228,6 @@ int  TReduction::look_for_a_path(int lme,GraphS* g, ListGraph &bp,EdgeS* e, int 
             int score=pv->check_long_reads(g,e);
             //we save the paths to sort them and choose the best one to reduce
             if(score == 3){
-                //todo:choose the one wiht more hits?
-                //pv->print_path();
-                /*if(pv->get_path_size() >= stmp->get_path_size()){
-                    if(pv->getClen() > stmp->getClen()){
-                        stmp=pv;
-                    }
-                }*/
                 //we choose the path with more support in the long reads
                 if(pv->get_path_hits() >= stmp->get_path_hits()){
                     stmp=pv;
@@ -297,3 +284,5 @@ void TReduction::print_reduced_edges() {
         cout << e.first<<" "<<e.second.first<<" "<<e.second.second<<endl;
     }
 }
+
+

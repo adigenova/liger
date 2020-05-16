@@ -50,10 +50,9 @@ typedef  struct linking{
     bool switched=0;
    //bool hasseq=0;
 
+    //we declare the constructure of the linking structure
     linking(int idl, uint32_t c1, uint32_t c2,int p_1, int p_2, bool co1, bool co2, bool ro1, bool ro2, int d,bool sw, int lr, int gaps, int gape )
             :lid(idl),c1(c1),c2(c2),p1(p_1),p2(p_2), cor1(co1),cor2(co2),ror1(ro1),ror2(ro2),dist(d),switched(sw),lonread_id(lr),gaps(gaps),gape(gape) {/*this->addseq(gapseq);*/};
-
-
 } linkingp;
 
 
